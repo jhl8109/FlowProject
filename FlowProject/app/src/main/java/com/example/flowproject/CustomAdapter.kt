@@ -1,17 +1,35 @@
 package com.example.flowproject
 
+//import android.app.AlertDialog
+import android.app.AlertDialog
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+//import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.Toast
+import com.google.android.material.button.MaterialButton
+
+//import com.google.android.material.button.MaterialButton
 
 
 class CustomAdapter(private val context: Context, private val dataList: ArrayList<DataVo>) :
     RecyclerView.Adapter<CustomAdapter.ItemViewHolder>() {
+
+    //
+    interface MyItemClickListener {
+        fun onItemClick(position: Int)
+        fun onLongClick(position: Int)
+    }
+    //
+    private lateinit var mItemClickListener: MyItemClickListener
+//
+
 
     var mPosition = 0
 
@@ -37,8 +55,23 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
             notifyDataSetChanged()
         }
     }
+    //
+    fun setMyItemClickListener(itemClickListener: MyItemClickListener) {
+        mItemClickListener = itemClickListener
+    }
 
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        //
+        init {
+            itemView.setOnClickListener {
+                mItemClickListener.onItemClick(adapterPosition)
+            }
+            itemView.setOnLongClickListener {
+                mItemClickListener.onLongClick(adapterPosition)
+                return@setOnLongClickListener true
+            }
+        }
+
         private val userPhoto = itemView.findViewById<ImageView>(R.id.userImg)
         private val userName = itemView.findViewById<TextView>(R.id.userNameTxt)
         private val userPay = itemView.findViewById<TextView>(R.id.payTxt)
@@ -75,17 +108,19 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.bind(dataList[position], context)
-        holder.itemView.setOnClickListener { view ->
-            setPosition(position)
-            Toast.makeText(view.context, "이름:" + dataList[position].name + " " + "전화번호:" + dataList[position].phonenumber + " 클릭!", Toast.LENGTH_SHORT).show()
-        }
-
-        holder.itemView.setOnLongClickListener { view ->
-            setPosition(position)
-            Toast.makeText(view.context, "이름:" + dataList[position].name + " " + "전화번호:" + dataList[position].phonenumber + " 롱클릭!", Toast.LENGTH_SHORT).show()
-            return@setOnLongClickListener true
-        }
+//        holder.itemView.setOnClickListener { view ->
+//            setPosition(position)
+//            Toast.makeText(view.context, "이름:" + dataList[position].name + " " + "전화번호:" + dataList[position].phonenumber + " 클릭!", Toast.LENGTH_SHORT).show()
+//        }
+//
+//        holder.itemView.setOnLongClickListener { view ->
+//            setPosition(position)
+//            Toast.makeText(view.context, "이름:" + dataList[position].name + " " + "전화번호:" + dataList[position].phonenumber + " 롱클릭!", Toast.LENGTH_SHORT).show()
+//            return@setOnLongClickListener true
+//        }
     }
+
+
 
     override fun getItemCount(): Int {
         return dataList.size
