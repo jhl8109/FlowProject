@@ -13,57 +13,39 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:text="전화번호부"
         android:gravity="center"
-        android:textColor="#AB000000"
+        android:text="전화번호부"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
+        android:layout_below="@+id/textView1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_layout"
-        android:layout_below="@+id/textView1"
-        android:background="#ececec" />
+        android:layout_above="@+id/bottom_layout"/>
 
     <LinearLayout
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-
-        android:background="#ececec"
+        android:layout_margin="10dp"
         android:orientation="horizontal">
 
-        <androidx.appcompat.widget.AppCompatButton
+        <Button
             android:id="@+id/add_btn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="end|bottom"
-            android:background="@drawable/button_design"
-            android:layout_marginLeft="300dp"
-            android:text="+"
-            android:textColor="@color/white"
-            android:textSize="45sp" />
-        <!--        <Button-->
-        <!--            android:id="@+id/modify_btn"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_weight="1"-->
-        <!--            android:text="수정" />-->
-        <!--        <Button-->
-        <!--            android:id="@+id/phone_btn"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_weight="1"-->
-        <!--            android:text="전화" />-->
-        <!--        <Button-->
-        <!--            android:id="@+id/del_btn"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_weight="1"-->
-        <!--            android:text="삭제" />-->
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:rotationX="0"
+            android:text="추가" />
 
+        <Button
+            android:id="@+id/del_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="삭제" />
     </LinearLayout>
 
 </RelativeLayout>
