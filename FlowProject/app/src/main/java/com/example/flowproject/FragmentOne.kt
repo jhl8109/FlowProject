@@ -1,7 +1,9 @@
 package com.example.flowproject
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.content.res.AssetManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -10,12 +12,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.PopupMenu
+import android.widget.Toast
+//import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
-import com.google.gson.Gson
+import kotlinx.android.synthetic.main.dialog_sample.view.*
+import kotlinx.android.synthetic.main.fragment_one.view.*
+import kotlinx.android.synthetic.main.view_item_layout.view.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -39,7 +46,7 @@ class FragmentOne : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var a = 0
-
+    lateinit var v : View
     private var userList: ArrayList<DataVo> = ArrayList()
 
 
@@ -63,7 +70,7 @@ class FragmentOne : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val v =  inflater.inflate(R.layout.fragment_one, container, false)
+        v =  inflater.inflate(R.layout.fragment_one, container, false)
         val recycler_view = v.findViewById<RecyclerView>(R.id.recycler_view)
 
         fun loadJSONFileFromAsset(): String {
@@ -115,14 +122,110 @@ class FragmentOne : Fragment() {
         }
 
         val mAdapter = CustomAdapter(v.context, userList)
+        mAdapter.setMyItemClickListener(object : CustomAdapter.MyItemClickListener {
+            override fun onItemClick(position: Int) {
+                mAdapter.setPosition(position)
+                Toast.makeText(v.context, "이름:" + userList[position].name + "\n" + "전화번호:" + userList[position].phonenumber, Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onLongClick(position: Int) {
+                val dialogView = layoutInflater.inflate(R.layout.longclick, null)
+                val alertDialog = AlertDialog.Builder(v.context)
+                    .setView(dialogView)
+                    .create()
+
+//                val userName = dialogView.findViewById<EditText>(R.id.username).text
+//                val phoneNumber = dialogView.findViewById<EditText>(R.id.phoneNumber).text
+//                val location = dialogView.findViewById<EditText>(R.id.location).text
+                val modify = dialogView.findViewById<Button>(R.id.modify)
+                val phone = dialogView.findViewById<Button>(R.id.phone)
+                val delete = dialogView.findViewById<Button>(R.id.delete)
+                val message = dialogView.findViewById<Button>(R.id.message)
+                val tempposition = position
+
+                modify.setOnClickListener {
+                    alertDialog.dismiss()
+                    var dialogView = layoutInflater.inflate(R.layout.dialog_sample, null)
+                    dialogView.username.hint = userList[position].name
+                    dialogView.phoneNumber.hint = userList[position].phonenumber
+                    dialogView.location.hint = userList[position].address
+
+                    val alertDialog = AlertDialog.Builder(v.context)
+                        .setView(dialogView)
+                        .create()
+
+                    val userName = dialogView.findViewById<EditText>(R.id.username).text
+                    val phoneNumber = dialogView.findViewById<EditText>(R.id.phoneNumber).text
+                    val location = dialogView.findViewById<EditText>(R.id.location).text
+                    val button = dialogView.findViewById<Button>(R.id.button)
+
+
+//                    if(userName.equals("")){
+//                        userName = userList[position].name
+//                    }
+//                    if(phoneNumber.equals("")){
+//                        phoneNumber = userList[position].phonenumber
+//                    }
+//                    if(location.equals("")){
+//                        location = userList[position].address
+//                    }
+
+                    button.setOnClickListener {
+                        var putusername = userName.toString()
+                        var putphoneNumber = phoneNumber.toString()
+                        var putlocation = location.toString()
+
+                        if(putusername.equals("")){
+                            putusername = userList[position].name
+                        }
+                        if(putphoneNumber.equals("")){
+                            putphoneNumber = userList[position].phonenumber
+                        }
+                        if(putlocation.equals("")){
+                            putlocation = userList[position].address
+                        }
+                        mAdapter.removeItem(position)
+                        mAdapter.addItem(DataVo(putusername, putlocation, putphoneNumber, "user_img_01"))
+                        alertDialog.dismiss()
+                    }
+
+                    alertDialog.show()
+                    alertDialog.window?.setBackgroundDrawableResource(R.drawable.borderline)
+                }
+                phone.setOnClickListener {
+                    alertDialog.dismiss()
+                    var intent = Intent(Intent.ACTION_DIAL)
+                    val phonenumber = userList[position].phonenumber
+                    intent.data = Uri.parse("tel:"+phonenumber)
+                    startActivity(intent)
+                }
+                message.setOnClickListener {
+                    alertDialog.dismiss()
+                    var intent = Intent(Intent.ACTION_SENDTO)
+                    val phonenumber = userList[position].phonenumber
+                    intent.data = Uri.parse("smsto:"+phonenumber)
+                    startActivity(intent)
+                }
+                delete.setOnClickListener {
+                    alertDialog.dismiss()
+                    mAdapter.removeItem(tempposition)
+                }
+
+                alertDialog.show()
+                alertDialog.window?.setBackgroundDrawableResource(R.drawable.borderline)
+            }
+
+        })
+
         recycler_view.adapter = mAdapter
 
         val layout = LinearLayoutManager(requireContext())
         recycler_view.layoutManager = layout
         recycler_view.setHasFixedSize(true)
-
         val add_btn = v.findViewById<Button>(R.id.add_btn)
-        val del_btn = v.findViewById<Button>(R.id.del_btn)
+//        val modify_btn = v.findViewById<Button>(R.id.modify_btn)
+//        val phone_btn = v.findViewById<Button>(R.id.phone_btn)
+//        val del_btn = v.findViewById<Button>(R.id.del_btn)
 
         add_btn.setOnClickListener {
 //            mAdapter.addItem(DataVo("아무개", "test14", "광주시", "12345678", "user_img_03"))
@@ -134,24 +237,66 @@ class FragmentOne : Fragment() {
             val userName = dialogView.findViewById<EditText>(R.id.username).text
             val phoneNumber = dialogView.findViewById<EditText>(R.id.phoneNumber).text
             val location = dialogView.findViewById<EditText>(R.id.location).text
-            val button = dialogView.findViewById<MaterialButton>(R.id.button)
+            val button = dialogView.findViewById<Button>(R.id.button)
 
             button.setOnClickListener {
+                val putuserName = userName.toString()
+                val putphoneNumber = phoneNumber.toString()
+                val putlocation = location.toString()
+
+                if(putuserName.equals("")){
+                    Toast.makeText(v.context, "Type name!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                if(putphoneNumber.equals("")){
+                    Toast.makeText(v.context, "Type phone number!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                if(putlocation.equals("")){
+                    Toast.makeText(v.context, "Type address!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
                 alertDialog.dismiss()
                 mAdapter.addItem(DataVo(userName.toString(), location.toString(), phoneNumber.toString(), "user_img_01"))
             }
 
             alertDialog.show()
+            alertDialog.window?.setBackgroundDrawableResource(R.drawable.borderline)
             // notifyDataSetChanged를 호출하여 adapter의 값이 변경되었다는 것을 알려준다.
             // 어댑터 안에서 처리했음으로 주석처리하였다.
             //mAdapter.notifyDataSetChanged()
         }
+//
+//        modify_btn.setOnClickListener {
+//            val dialogView = layoutInflater.inflate(R.layout.dialog_sample, null)
+//            val alertDialog = AlertDialog.Builder(v.context)
+//                .setView(dialogView)
+//                .create()
+//
+//            val userName = dialogView.findViewById<EditText>(R.id.username).text
+//            val phoneNumber = dialogView.findViewById<EditText>(R.id.phoneNumber).text
+//            val location = dialogView.findViewById<EditText>(R.id.location).text
+//            val button = dialogView.findViewById<MaterialButton>(R.id.button)
+//
+//            button.setOnClickListener {
+//                alertDialog.dismiss()
+//                mAdapter.addItem(DataVo(userName.toString(), location.toString(), phoneNumber.toString(), "user_img_01"))
+//            }
+//
+//            alertDialog.show()
+//            // notifyDataSetChanged를 호출하여 adapter의 값이 변경되었다는 것을 알려준다.
+//            // 어댑터 안에서 처리했음으로 주석처리하였다.
+//            //mAdapter.notifyDataSetChanged()
+//        }
 
-        del_btn.setOnClickListener {
-            mAdapter.removeItem(mAdapter.getPosition())
-            // notifyDataSetChanged를 호출하여 adapter의 값이 변경되었다는 것을 알려준다.
-            //mAdapter.notifyDataSetChanged()
-        }
+//        del_btn.setOnClickListener {
+//            mAdapter.removeItem(mAdapter.getPosition())
+//            // notifyDataSetChanged를 호출하여 adapter의 값이 변경되었다는 것을 알려준다.
+//            //mAdapter.notifyDataSetChanged()
+//        }
 
         return v
     }

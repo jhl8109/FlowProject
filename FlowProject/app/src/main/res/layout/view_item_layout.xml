@@ -5,7 +5,7 @@
     android:layout_height="60dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/borderline"
+    android:background="@drawable/borderline2"
     android:layout_margin="5dp">
 
     <ImageView
@@ -27,6 +27,7 @@
         android:layout_marginStart="15dp"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="#333333"
         app:layout_constraintStart_toEndOf="@+id/userImg"
         app:layout_constraintTop_toTopOf="@+id/userImg"
         tools:text="홍길동"/>
