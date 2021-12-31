@@ -24,21 +24,13 @@
                 android:text="갤러리"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <LinearLayout
-                    android:id="@+id/ll_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/photo_border"
-                    android:orientation="vertical"
-                    android:padding="4dp">
-
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
+            <LinearLayout
+                android:id="@+id/ll_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
         </LinearLayout>
-
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
@@ -47,8 +39,7 @@
             app:tint="@color/white"
             android:backgroundTint="#2A7EC1"
             android:layout_marginBottom="20dp"
-            android:layout_gravity="bottom|center"
-            app:borderWidth="0dp"/>
+            android:layout_gravity="bottom|center"/>
 
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

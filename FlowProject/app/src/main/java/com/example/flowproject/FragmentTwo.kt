@@ -2,12 +2,14 @@ package com.example.flowproject
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.TypedArray
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.ImageDecoder
+import android.graphics.drawable.Drawable
 import android.media.ExifInterface
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -16,15 +18,16 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.core.content.FileProvider
-import androidx.core.net.toUri
-import com.bumptech.glide.Glide
+import android.widget.Switch
+import androidx.core.view.children
+import androidx.core.view.marginLeft
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import java.io.FileOutputStream
@@ -34,40 +37,23 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+// TODO: Rename parameter arguments, choose names that match
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
+
+/**
+ * A simple [Fragment] subclass.
+ * Use the [FragmentTwo.newInstance] factory method to
+ * create an instance of this fragment.
+ */
 class FragmentTwo : Fragment() {
-    val mainActivity = MainActivity()
-    lateinit var curPhotoPath: String //문자열 형태의 사진 경로 값(초기값을 null로 시작하고 싶을 때)
-    lateinit var photoURI: Uri
-    val REQUEST_IMAGE_CAPTURE = 1 //카메라 사진촬영 요청코드
     val REQUEST_CODE = 0
-    var bitmapList = ArrayList<Uri>()
+    var bitmapList = ArrayList<Bitmap>()
     lateinit var v : View
-    lateinit var ll_vertical : LinearLayout
-    lateinit var imageArrayList : ArrayList<ImageView>
-    lateinit var linearLayoutList : ArrayList<LinearLayout>
-    val TAG = "MainActivity"
-    var db : AppDatabase? = null
-    val converter = BitmapConverter()
-
-    var galleryList = mutableListOf<Gallery>()
-    val layoutParams = LinearLayout.LayoutParams(
-        LinearLayout.LayoutParams.MATCH_PARENT,
-        LinearLayout.LayoutParams.WRAP_CONTENT,
-    4.0F)
-    val imageLayoutParams = LinearLayout.LayoutParams(
-        320,
-        320,
-        1F
-    )
-    val fillLinear = LinearLayout.LayoutParams(
-        1070,
-        1400
-    )
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.e("onCreate!","onCreate!")
     }
 
     override fun onCreateView(
@@ -76,31 +62,31 @@ class FragmentTwo : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_two, container, false)
-        Log.e("onCreateView!","onCreateView!")
 
-        db = AppDatabase.getInstance(requireContext())
-        val savedGallery = db!!.photosDao().getAll()
-        galleryList = ArrayList()
-        if(savedGallery.isNotEmpty()){
-            galleryList.addAll(savedGallery)
-        }
-        bitmapList = ArrayList()
-        imageArrayList = ArrayList()
-        linearLayoutList = ArrayList()
-
-        for(i in galleryList.indices) {
-            bitmapList.add(galleryList[i].photo.toUri())
-        }
         val fab = v.findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
-            showSelectCameraOrImage()
+            gallery()
         }
 
-
-        ll_vertical = v.findViewById(R.id.ll_vertical)
+        val ll_vertical = v.findViewById<LinearLayout>(R.id.ll_vertical)
         ll_vertical.weightSum=20.0F
-        imageArrayList = ArrayList()
-        linearLayoutList = ArrayList()
+        var imageArrayList = ArrayList<ImageView>()
+        var linearLayoutList = ArrayList<LinearLayout>()
+        val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+            4.0F
+        )
+        val imageLayoutParams = LinearLayout.LayoutParams(
+            350,
+            350,
+            1F
+        )
+
+        val fillLinear = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        )
 
         for (i in 0..4) {
             val linearLayout = LinearLayout(context)
@@ -109,94 +95,22 @@ class FragmentTwo : Fragment() {
             linearLayoutList.add(linearLayout)
             for (j in 0..3) {
                 var imageView = ImageView(context)
-                imageView.layoutParams = imageLayoutParams
-                imageView.setPadding(0,5,0,5)
-                imageView.background = requireContext().getDrawable(R.drawable.photo_small_border)
-                imageView.clipToOutline =true
-
                 if (bitmapList.size > j+i*4)  {
-                    Glide.with(this)
-                        .load(bitmapList[j+i*4])
-                        .error(R.drawable.noimage)
-                        .into(imageView)
+                    imageView.setImageBitmap(bitmapList[j+i*4])
+
                 }
-                if (bitmapList.size == j+i*4) {
-                    imageView.setImageResource(R.drawable.ic_add)
-                }
+                imageView.layoutParams = imageLayoutParams
+                imageView.background = requireContext().getDrawable(R.drawable.photo_border)
                 imageArrayList.add(imageView)
+
             }
         }
-//        if(bitmapList.size%4 != 0 && bitmapList.size>imageArrayList.size) {
-//            val bitSize = bitmapList.size
-//            for (i in 0..4-bitSize%4){
-//                var imageView = ImageView(context)
-//                imageView.layoutParams = imageLayoutParams
-//                imageView.setPadding(0,5,0,5)
-//                imageView.background = requireContext().getDrawable(R.drawable.photo_small_border)
-//                imageView.clipToOutline =true
-//                Log.e("compact","size")
-//                imageArrayList.add(imageView)
-//            }
-//        }
-//        for(i in 0..(imageArrayList.size-1)/4) {
-//            for (j in 0..3) {
-//                linearLayoutList[i].addView(imageArrayList[j+i*4])
-//                if (bitmapList.size>j+i*4) {
-//                    imageArrayList[j+i*4].setOnLongClickListener {
-//                        db!!.photosDao().delete(galleryList[j+i*4])
-//                        refreshFragment()
-//                        Toast.makeText(requireContext(), "삭제 성공!", Toast.LENGTH_SHORT).show()
-//                        return@setOnLongClickListener true
-//                    }
-//                    imageArrayList[j+i*4].setOnClickListener {
-//                        if (imageArrayList[j+i*4].layoutParams != fillLinear){
-//                            for (k in 0..4) {
-//                                for (w in 0..3) {
-//                                    if (k == i && w == j) continue
-//                                    imageArrayList[w+k*4].visibility = View.GONE
-//                                }
-//                                imageArrayList[j+i*4].layoutParams = fillLinear
-//                                if (k == i) continue
-//                                linearLayoutList[k].visibility = View.GONE
-//                            }
-//                        }
-//                        else {
-//                            for (k in 0..4) {
-//                                for (w in 0..3) {
-//                                    if (k == i && w == j) continue
-//                                    imageArrayList[w+k*4].visibility = View.VISIBLE
-//                                }
-//                                imageArrayList[j+i*4].layoutParams = imageLayoutParams
-//                                if (k == i) continue
-//                                linearLayoutList[k].visibility = View.VISIBLE
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            if (linearLayoutList[i].parent != null) {
-//                val parent = linearLayoutList[i].parent as ViewGroup
-//                parent.removeView(linearLayoutList[i])
-//            }
-//            ll_vertical.addView(linearLayoutList[i])
-//        }
-
-        Log.e("bitmapList",bitmapList.size.toString())
-        Log.e("imageArrayList",imageArrayList.size.toString())
-        Log.e("linearList",linearLayoutList.size.toString())
         for (i in 0..4) {
             for (j in 0..3) {
                 linearLayoutList[i].addView(imageArrayList[j+i*4])
                 if (bitmapList.size>j+i*4) {
-                    imageArrayList[j+i*4].setOnLongClickListener {
-                        db!!.photosDao().delete(galleryList[j+i*4])
-                        refreshFragment()
-                        Toast.makeText(requireContext(), "삭제 성공!", Toast.LENGTH_SHORT).show()
-                        return@setOnLongClickListener true
-                    }
                     imageArrayList[j+i*4].setOnClickListener {
                         if (imageArrayList[j+i*4].layoutParams != fillLinear){
-
                             for (k in 0..4) {
                                 for (w in 0..3) {
                                     if (k == i && w == j) continue
@@ -224,39 +138,8 @@ class FragmentTwo : Fragment() {
             }
             ll_vertical.addView(linearLayoutList[i])
         }
-        return v
-    }
-    private fun showSelectCameraOrImage() {
-        CameraOrImageSelectDialog(object: CameraOrImageSelectDialog.OnClickSelectListener {
-            override fun onClickCamera() {
-                takeCapture()
-            }
-            override fun onClickImage() {
-                gallery()
-            }
-        }).show(requireFragmentManager(), "CameraOrImageSelectDialog")
-    }
-    fun takeCapture() { //카메라 촬영
-        // 기본 카메라 앱 실행
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(activity?.packageManager!!)?.also {
-                val photofile: File? =try {
-                    createImageFile()
-                } catch(ex: IOException) {
-                    null
-                }
-                photofile?.also {
-                    photoURI = FileProvider.getUriForFile(
-                        requireContext(),
-                        "com.example.flowproject.fileprovider", //보안 서명
-                        it
-                    )
 
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE)
-                }
-            }
-        }
+        return v
     }
 
 
@@ -266,49 +149,25 @@ class FragmentTwo : Fragment() {
         intent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(intent,REQUEST_CODE)
     }
-    fun createImageFile(): File { // 이미지파일 생성
-        val timeStamp: String = SimpleDateFormat("yyyy-MM-dd-HHmmss").format(Date())
-        val storageDir: File? = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        Log.e("storageDir","$storageDir")
-        return File.createTempFile("JPEG_${timeStamp}_",".jpg",storageDir)
-            .apply { curPhotoPath = absolutePath }
-    }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) { //startActivityForResult를 통해서 기본 카메라 앱으로 부터 받아온 사진 결과값
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            var bitmap: Bitmap
-            val file = File(curPhotoPath) // 절대 경로인 사진이 저장된 값
-            if (Build.VERSION.SDK_INT < 28) { // 안드로이드9.0(PIE) 버전보다 낮을 경우
-                Log.d("Check",file.toString())
-                bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Uri.fromFile(file)) // 끌어온 비트맵을 넣음
-            } else { //PIE버전 이상인 경우
-                val decode = ImageDecoder.createSource( //변환을 해서 가져옴
-                    requireActivity().contentResolver,
-                    Uri.fromFile(file)
-                )
-                bitmap = ImageDecoder.decodeBitmap(decode)
-            }
-            //bitmapList.add(photoURI)
-            db?.photosDao()?.insertAll(Gallery(null,photoURI.toString()))
-            refreshFragment()
-
-        }
         //사진을 성공적으로 가져 온 경우
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK ) {
             var uri = data?.data
+            //val path : String? = data!!.data!!.path
             val path = getFullPath(uri!!)
+
             var input = requireContext().contentResolver.openInputStream(uri!!)
             var image = BitmapFactory.decodeStream(input)
-            val orientedBitmap = ExifUtil.rotateBitmap(path,image)
-            //bitmapList.add(uri)
-            db?.photosDao()?.insertAll(Gallery(null,uri.toString()))
-            refreshFragment()
+            val file : File = bitmapToFile(image,path)
+            uri = bitmapToUri(image,99)
+            bitmapList.add(image)
+            Log.e("uri", bitmapList.toString() + "          "+bitmapList.size.toString())
+
         }
 
     }
-
     fun getFullPath(uri: Uri) :String? {
         val context = requireContext()
         val contentResolver = context.contentResolver ?: return null
@@ -329,9 +188,12 @@ class FragmentTwo : Fragment() {
             e.printStackTrace()
             /*  절대 경로를 getGps()에 넘겨주기   */
             getGps(file.getAbsolutePath())
+
+
         }
         return file.getAbsolutePath()
     }
+
     fun getGps(photoPath: String) {
         var exif: ExifInterface?= null
         try{
@@ -345,18 +207,34 @@ class FragmentTwo : Fragment() {
         val lon = exif?.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
         // TAG_GPS_LONGITUDE_REF: Indicates whether the longitude is east or west longitude.
         val lon_ref = exif?.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
-
-        Log.d("latitude",lat.toString())
-        Log.d("longtitude",lon.toString())
     }
-    fun refreshFragment() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            requireFragmentManager().beginTransaction().detach(this).commitNow();
-            requireFragmentManager().beginTransaction().attach(this).commitNow();
-        } else {
-            requireFragmentManager().beginTransaction().detach(this).attach(this).commit();
+    fun bitmapToFile(bitmap:Bitmap, path : String?) : File {
+        val file = File(path)
+        var out : OutputStream
+        Log.e("path","$path")
+        file.createNewFile()
+        out = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG,10,out)
+        out.close()
+        return file
+    }
+    fun bitmapToUri(bitmap: Bitmap, i:Int) :Uri {
+        val folderPath = Environment.getExternalStorageDirectory().absolutePath + "/Pictures/" //사진 폴더에 저장 경로 선언
+        val timeStamp: String = SimpleDateFormat("yyyy-MM-dd-HHmmss").format(Date())+"-$i"
+        val fileName = "${timeStamp}.jpeg"
+        val folder = File(folderPath)
+        if (!folder.isDirectory) { // 현재 해당 경로에 폴더가 존재하지 않는다면
+            folder.mkdirs()
         }
+        //실제적인 저장처리
+        val out = FileOutputStream(folderPath + fileName)
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
+        val file = File("/storage/emulated/0/Pictures/${fileName}")
+        var uri = Uri.parse(file.absolutePath)
+
+        return uri
     }
+
 
     companion object {
         /**
@@ -371,7 +249,10 @@ class FragmentTwo : Fragment() {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             FragmentTwo().apply {
-
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, param2)
+                }
             }
     }
 }
