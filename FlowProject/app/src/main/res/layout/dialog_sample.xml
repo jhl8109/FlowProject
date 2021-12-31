@@ -1,15 +1,31 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/borderline2">
 
-    <ImageView
+    <!--    <ImageView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="64dp"-->
+    <!--        android:background="#FFFFBB33"-->
+    <!--        android:contentDescription="@string/app_name"-->
+    <!--        android:scaleType="center"-->
+    <!--        android:src="@mipmap/ic_launcher" />-->
+
+    <TextView
+        android:id="@+id/textView1"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:background="#FFFFBB33"
-        android:contentDescription="@string/app_name"
-        android:scaleType="center"
-        android:src="@mipmap/ic_launcher" />
+        android:layout_height="wrap_content"
+        android:text="  Type Information"
+        android:textColor="#C8000000"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+    <ImageView android:src="@drawable/line_sample"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_margin="5dp" />
+
+
 
     <EditText
         android:id="@+id/username"
@@ -44,12 +60,13 @@
         android:hint="location"
         android:inputType="textEmailAddress" />
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="96dp"
+        android:layout_height="33dp"
         android:layout_gravity="end"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/longclick_button_design"
         android:text="ok" />
 </LinearLayout>
