@@ -15,9 +15,11 @@
     <TextView
         android:id="@+id/textView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="  Type Information"
         android:textColor="#C8000000"
+        android:textSize="30dp"
+        android:gravity="bottom"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
     <ImageView android:src="@drawable/line_sample"
