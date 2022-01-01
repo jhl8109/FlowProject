@@ -2,41 +2,134 @@ package com.example.flowproject
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.content.getSystemService
+import com.bumptech.glide.Glide
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.android.synthetic.main.view_item_layout.view.*
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
-class FragmentThree : Fragment() , SensorEventListener {
+class FragmentThree : Fragment() {
 
-    lateinit var mReset : Button
-    lateinit var mWalkNum : TextView
-    var mSteps : Int = 0
-    var mCounterSteps : Int = 0
-    lateinit var sensorManager : SensorManager
-    lateinit var stepCountSensor : Sensor
-    private val multiplePermissionsCode = 100
-    private val requiredPermissions = arrayOf(
-        Manifest.permission.INTERNET,
-        Manifest.permission.ACTIVITY_RECOGNITION
-    )
+    lateinit var photoURI: Uri
+    val REQUEST_CODE = 0
+    val REQUEST_IMAGE_CAPTURE = 1
+    lateinit var curPhotoPath: String
+    lateinit var imageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+    }
+
+    private fun showSelectCameraOrImage() {
+        CameraOrImageSelectDialog(object: CameraOrImageSelectDialog.OnClickSelectListener {
+            override fun onClickCamera() {
+                takeCapture()
+            }
+            override fun onClickImage() {
+                gallery()
+            }
+        }).show(requireFragmentManager(), "CameraOrImageSelectDialog")
+    }
+
+    private fun gallery() {
+        Log.e("test", "reach here 2")
+        var intent = Intent()
+        intent.type = "image/*"
+        intent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(intent,REQUEST_CODE)
+    }
+
+    private fun takeCapture(){
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(activity?.packageManager!!)?.also {
+                val photofile: File? =try {
+                    createImageFile()
+                } catch(ex: IOException) {
+                    null
+                }
+                photofile?.also {
+                    photoURI = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.example.flowproject.fileprovider", //보안 서명
+                        it
+                    )
+
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE)
+                }
+            }
+        }
+    }
+
+    fun createImageFile(): File { // 이미지파일 생성
+        val timeStamp: String = SimpleDateFormat("yyyy-MM-dd-HHmmss").format(Date())
+        val storageDir: File? = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        Log.e("storageDir","$storageDir")
+        return File.createTempFile("JPEG_${timeStamp}_",".jpg",storageDir)
+            .apply { curPhotoPath = absolutePath }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) { //startActivityForResult를 통해서 기본 카메라 앱으로 부터 받아온 사진 결과값
+        super.onActivityResult(requestCode, resultCode, data)
+
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            var bitmap: Bitmap
+            val file = File(curPhotoPath) // 절대 경로인 사진이 저장된 값
+            if (Build.VERSION.SDK_INT < 28) { // 안드로이드9.0(PIE) 버전보다 낮을 경우
+                Log.d("Check",file.toString())
+                bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Uri.fromFile(file)) // 끌어온 비트맵을 넣음
+            } else { //PIE버전 이상인 경우
+                val decode = ImageDecoder.createSource( //변환을 해서 가져옴
+                    requireActivity().contentResolver,
+                    Uri.fromFile(file)
+                )
+                bitmap = ImageDecoder.decodeBitmap(decode)
+            }
+
+            imageView.setImageURI(photoURI)
+
+
+
+        }
+
+        //사진을 성공적으로 가져 온 경우
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK ) {
+            Log.e("test","reachhere3")
+            var uri = data?.data
+
+            imageView.setImageURI(uri)
+
+        }
 
     }
 
@@ -46,70 +139,34 @@ class FragmentThree : Fragment() , SensorEventListener {
     ): View? {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_three,container,false)
-        val activity = v.context as Activity
-        checkPermissions()
 
-        sensorManager = activity?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        imageView = v.findViewById<ImageView>(R.id.faceiamge)
+        val photobutton = v.findViewById<Button>(R.id.photobutton)
+        val sendbutton = v.findViewById<Button>(R.id.sendbutton)
 
-        if (stepCountSensor == null) {
-            Toast.makeText(context,"No step detect sensor", Toast.LENGTH_SHORT)
+
+        photobutton.setOnClickListener{
+            showSelectCameraOrImage()
         }
-        mReset = v.findViewById(R.id.btn_reset)
-        mWalkNum = v.findViewById(R.id.tv_walk)
-        mWalkNum.text = mSteps.toString()
-        mReset.setOnClickListener {
-            mSteps = 0
-            mCounterSteps = 0
-            mWalkNum.text = mSteps.toString()
+
+        sendbutton.setOnClickListener{
+            val dialogView = layoutInflater.inflate(R.layout.result, null)
+            val alertDialog = AlertDialog.Builder(v.context)
+                .setView(dialogView)
+                .create()
+
+            alertDialog.show()
+            alertDialog.window?.setBackgroundDrawableResource(R.drawable.borderline)
         }
+
         return v
     }
     override fun onStart() {
         super.onStart()
-        if(sensorManager != null) {
-            sensorManager.registerListener(this,stepCountSensor,SensorManager.SENSOR_DELAY_GAME)
-        }
+
     }
 
-   /*override fun onStop() {
-        super.onStop()
-        if(sensorManager!= null) {
-            sensorManager.unregisterListener(this)
-        }
-    }*/
 
-    override fun onSensorChanged(p0: SensorEvent?) {
-        Log.e("detected" ,"detected")
-        if (p0?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
-            if (mCounterSteps < 1) {
-                mCounterSteps = p0.values[0].toInt()
-            }
-            mSteps = (p0.values[0] - mCounterSteps).toInt()
-            mWalkNum.text = mSteps.toString()
-            Log.e("walk","New step detected by step counter sensor. Total step count : " + mSteps)
-        }
-    }
 
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-    }
 
-    private fun checkPermissions() {
-        //거절되었거나 아직 수락하지 않은 권한(퍼미션)을 저장할 문자열 배열 리스트
-        var rejectedPermissionList = ArrayList<String>()
-
-        //필요한 퍼미션들을 하나씩 끄집어내서 현재 권한을 받았는지 체크
-        for(permission in requiredPermissions){
-            if(ContextCompat.checkSelfPermission(requireActivity(), permission) != PackageManager.PERMISSION_GRANTED) {
-                //만약 권한이 없다면 rejectedPermissionList에 추가
-                rejectedPermissionList.add(permission)
-            }
-        }
-        //거절된 퍼미션이 있다면...
-        if(rejectedPermissionList.isNotEmpty()){
-            //권한 요청!
-            val array = arrayOfNulls<String>(rejectedPermissionList.size)
-            ActivityCompat.requestPermissions(requireActivity(), rejectedPermissionList.toArray(array), multiplePermissionsCode)
-        }
-    }
 }
