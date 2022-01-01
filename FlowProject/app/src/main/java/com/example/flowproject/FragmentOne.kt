@@ -1,11 +1,17 @@
 package com.example.flowproject
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.AssetManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,18 +22,25 @@ import android.widget.PopupMenu
 import android.widget.Toast
 //import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.dialog_sample.view.*
 import kotlinx.android.synthetic.main.fragment_one.view.*
 import kotlinx.android.synthetic.main.view_item_layout.view.*
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.io.path.Path
 
 
@@ -47,7 +60,16 @@ class FragmentOne : Fragment() {
     private var param2: String? = null
     private var a = 0
     lateinit var v : View
+    lateinit var recyclerView: RecyclerView
     private var userList: ArrayList<DataVo> = ArrayList()
+    private var urilist: ArrayList<Uri?> = ArrayList()
+    val REQUEST_CODE = 0
+    lateinit var photoURI: Uri
+    val REQUEST_IMAGE_CAPTURE = 1
+    lateinit var curPhotoPath: String
+    lateinit var mAdapter: CustomAdapter
+    lateinit var tempposition: String
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +78,90 @@ class FragmentOne : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+    }
+
+    private fun showSelectCameraOrImage() {
+        CameraOrImageSelectDialog(object: CameraOrImageSelectDialog.OnClickSelectListener {
+            override fun onClickCamera() {
+                takeCapture()
+            }
+            override fun onClickImage() {
+                gallery()
+            }
+        }).show(requireFragmentManager(), "CameraOrImageSelectDialog")
+    }
+
+    private fun takeCapture(){
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(activity?.packageManager!!)?.also {
+                val photofile: File? =try {
+                    createImageFile()
+                } catch(ex: IOException) {
+                    null
+                }
+                photofile?.also {
+                    photoURI = FileProvider.getUriForFile(
+                        requireContext(),
+                        "com.example.flowproject.fileprovider", //보안 서명
+                        it
+                    )
+
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE)
+                }
+            }
+        }
+    }
+
+    fun createImageFile(): File { // 이미지파일 생성
+        val timeStamp: String = SimpleDateFormat("yyyy-MM-dd-HHmmss").format(Date())
+        val storageDir: File? = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        Log.e("storageDir","$storageDir")
+        return File.createTempFile("JPEG_${timeStamp}_",".jpg",storageDir)
+            .apply { curPhotoPath = absolutePath }
+    }
+
+    private fun gallery() {
+        Log.e("test", "reach here 2")
+        var intent = Intent()
+        intent.type = "image/*"
+        intent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(intent,REQUEST_CODE)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) { //startActivityForResult를 통해서 기본 카메라 앱으로 부터 받아온 사진 결과값
+        super.onActivityResult(requestCode, resultCode, data)
+
+        Log.e("test", tempposition)
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            var bitmap: Bitmap
+            val file = File(curPhotoPath) // 절대 경로인 사진이 저장된 값
+            if (Build.VERSION.SDK_INT < 28) { // 안드로이드9.0(PIE) 버전보다 낮을 경우
+                Log.d("Check",file.toString())
+                bitmap = MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, Uri.fromFile(file)) // 끌어온 비트맵을 넣음
+            } else { //PIE버전 이상인 경우
+                val decode = ImageDecoder.createSource( //변환을 해서 가져옴
+                    requireActivity().contentResolver,
+                    Uri.fromFile(file)
+                )
+                bitmap = ImageDecoder.decodeBitmap(decode)
+            }
+
+            urilist[tempposition.toInt()] = photoURI
+            mAdapter.editimage(photoURI, tempposition.toInt())
+        }
+
+        //사진을 성공적으로 가져 온 경우
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK ) {
+            Log.e("test","reachhere3")
+            var uri = data?.data
+
+            urilist[tempposition.toInt()] = uri
+            mAdapter.editimage(uri, tempposition.toInt())
+        }
+
     }
 
 //    var userList = arrayListOf<DataVo>(
@@ -113,6 +219,7 @@ class FragmentOne : Fragment() {
                         baseInfo.getString("photo")
                     )
                     userList.add(tempData)
+                    urilist.add(null)
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -121,7 +228,7 @@ class FragmentOne : Fragment() {
             }
         }
 
-        val mAdapter = CustomAdapter(v.context, userList)
+        mAdapter = CustomAdapter(v.context, userList, urilist)
         mAdapter.setMyItemClickListener(object : CustomAdapter.MyItemClickListener {
             override fun onItemClick(position: Int) {
                 mAdapter.setPosition(position)
@@ -141,7 +248,8 @@ class FragmentOne : Fragment() {
                 val phone = dialogView.findViewById<Button>(R.id.phone)
                 val delete = dialogView.findViewById<Button>(R.id.delete)
                 val message = dialogView.findViewById<Button>(R.id.message)
-                val tempposition = position
+                val photo = dialogView.findViewById<Button>(R.id.photo)
+                tempposition = position.toString()
 
                 modify.setOnClickListener {
                     alertDialog.dismiss()
@@ -184,8 +292,9 @@ class FragmentOne : Fragment() {
                         if(putlocation.equals("")){
                             putlocation = userList[position].address
                         }
-                        mAdapter.removeItem(position)
-                        mAdapter.addItem(DataVo(putusername, putlocation, putphoneNumber, "user_img_01"))
+//                        mAdapter.removeItem(position)
+//                        mAdapter.addItem(DataVo(putusername, putlocation, putphoneNumber, "user_img_01"))
+                        mAdapter.editItem(DataVo(putusername, putlocation, putphoneNumber, "user_img_01"), position)
                         alertDialog.dismiss()
                     }
 
@@ -206,9 +315,13 @@ class FragmentOne : Fragment() {
                     intent.data = Uri.parse("smsto:"+phonenumber)
                     startActivity(intent)
                 }
+                photo.setOnClickListener {
+                    showSelectCameraOrImage()
+                    alertDialog.dismiss()
+                }
                 delete.setOnClickListener {
                     alertDialog.dismiss()
-                    mAdapter.removeItem(tempposition)
+                    mAdapter.removeItem(position)
                 }
 
                 alertDialog.show()
@@ -222,7 +335,7 @@ class FragmentOne : Fragment() {
         val layout = LinearLayoutManager(requireContext())
         recycler_view.layoutManager = layout
         recycler_view.setHasFixedSize(true)
-        val add_btn = v.findViewById<Button>(R.id.add_btn)
+        val add_btn = v.findViewById<FloatingActionButton>(R.id.add_btn)
 //        val modify_btn = v.findViewById<Button>(R.id.modify_btn)
 //        val phone_btn = v.findViewById<Button>(R.id.phone_btn)
 //        val del_btn = v.findViewById<Button>(R.id.del_btn)
@@ -261,6 +374,7 @@ class FragmentOne : Fragment() {
 
                 alertDialog.dismiss()
                 mAdapter.addItem(DataVo(userName.toString(), location.toString(), phoneNumber.toString(), "user_img_01"))
+                urilist.add(null)
             }
 
             alertDialog.show()

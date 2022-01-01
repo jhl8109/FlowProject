@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="250dp"
-    android:layout_height="200dp"
+    android:layout_height="250dp"
     android:orientation="vertical"
     android:background="@drawable/borderline2">
 
@@ -31,6 +31,15 @@
         android:layout_marginTop="5dp"
         android:background="@drawable/longclick_button_design"
         android:text="message" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/photo"
+        android:layout_width="200dp"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/longclick_button_design"
+        android:text="photo" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/delete"
