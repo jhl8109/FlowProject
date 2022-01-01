@@ -26,6 +26,7 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import retrofit2.Retrofit
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -111,10 +112,11 @@ class FragmentTwo : Fragment() {
                 var imageView = ImageView(context)
                 imageView.layoutParams = imageLayoutParams
                 imageView.setPadding(0,5,0,5)
-                imageView.background = requireContext().getDrawable(R.drawable.photo_small_border)
+
                 imageView.clipToOutline =true
 
                 if (bitmapList.size > j+i*4)  {
+                    imageView.background = requireContext().getDrawable(R.drawable.photo_small_border)
                     Glide.with(this)
                         .load(bitmapList[j+i*4])
                         .error(R.drawable.noimage)
@@ -195,50 +197,6 @@ class FragmentTwo : Fragment() {
             }
             ll_vertical.addView(linearLayoutList[i])
         }
-
-        Log.e("bitmapList",bitmapList.size.toString())
-        Log.e("imageArrayList",imageArrayList.size.toString())
-        Log.e("linearList",linearLayoutList.size.toString())
-//        for (i in 0..4) {
-//            for (j in 0..3) {
-//                linearLayoutList[i].addView(imageArrayList[j+i*4])
-//                if (bitmapList.size>j+i*4) {
-//                    imageArrayList[j+i*4].setOnLongClickListener {
-//                        db!!.photosDao().delete(galleryList[j+i*4])
-//                        refreshFragment()
-//                        Toast.makeText(requireContext(), "삭제 성공!", Toast.LENGTH_SHORT).show()
-//                        return@setOnLongClickListener true
-//                    }
-//                    imageArrayList[j+i*4].setOnClickListener {
-//                        if (imageArrayList[j+i*4].layoutParams != fillLinear){
-//
-//                            for (k in 0..4) {
-//                                for (w in 0..3) {
-//                                    if (k == i && w == j) continue
-//                                    imageArrayList[w+k*4].visibility = View.GONE
-//                                }
-//                                imageArrayList[j+i*4].layoutParams = fillLinear
-//                                if (k == i) continue
-//                                linearLayoutList[k].visibility = View.GONE
-//                            }
-//                        }
-//                        else {
-//                            for (k in 0..4) {
-//                                for (w in 0..3) {
-//                                    if (k == i && w == j) continue
-//                                    imageArrayList[w+k*4].visibility = View.VISIBLE
-//                                }
-//                                imageArrayList[j+i*4].layoutParams = imageLayoutParams
-//                                if (k == i) continue
-//                                linearLayoutList[k].visibility = View.VISIBLE
-//                            }
-//                        }
-//                    }
-//                }
-//
-//            }
-//            ll_vertical.addView(linearLayoutList[i])
-//        }
         return v
     }
     private fun showSelectCameraOrImage() {
