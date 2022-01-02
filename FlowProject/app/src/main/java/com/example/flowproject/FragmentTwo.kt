@@ -111,7 +111,6 @@ class FragmentTwo : Fragment() {
             for (j in 0..3) {
                 var imageView = ImageView(context)
                 imageView.layoutParams = imageLayoutParams
-
                 imageView.clipToOutline =true
 
                 if (bitmapList.size > j+i*4)  {
@@ -136,7 +135,7 @@ class FragmentTwo : Fragment() {
                     imageView.setPadding(0,5,0,5)
                     imageView.background = requireContext().getDrawable(R.drawable.photo_small_border)
                     imageView.clipToOutline =true
-                    if (20+4*x+i < bitSize)  {
+                    if (20+x*4+i < bitSize)  {
                         Glide.with(this)
                             .load(bitmapList[20+4*x+i])
                             .error(R.drawable.noimage)

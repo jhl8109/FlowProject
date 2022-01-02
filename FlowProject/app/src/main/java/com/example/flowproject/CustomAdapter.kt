@@ -107,10 +107,10 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
                 if (resourceId > 0) {
                     userPhoto.setImageResource(resourceId)
                 } else {
-                    userPhoto.setImageResource(R.mipmap.ic_launcher_black)
+                    userPhoto.setImageResource(R.drawable.ic_android)
                 }
             } else {
-                userPhoto.setImageResource(R.mipmap.ic_launcher_black)
+                userPhoto.setImageResource(R.drawable.ic_android)
             }
 
             //TextView에 데이터 세팅

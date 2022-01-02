@@ -1,20 +1,20 @@
 {
   "usersInfo": [
     {
-      "name": "Jungwung Park",
-      "address": "Daejon",
+      "name": "박정웅",
+      "address": "대전",
       "phonenumber": "010-1234-5678",
       "photo": "user_img_01"
     },
     {
-      "name": "Jeho Lee",
-      "address": "Yangsan",
+      "name": "이제호",
+      "address": "양산",
       "phonenumber": "010-8765-4321",
       "photo": "user_img_01"
     },
     {
-      "name": "Someone",
-      "address": "Seoul",
+      "name": "홍길동",
+      "address": "서울",
       "phonenumber": "010-1111-1111",
       "photo": "user_img_01"
     }
