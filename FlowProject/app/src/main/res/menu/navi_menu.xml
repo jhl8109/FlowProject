@@ -13,6 +13,6 @@
     <item android:id="@+id/third"
         app:showAsAction="ifRoom"
         android:enabled="true"
-        android:icon="@drawable/ic_cloud"
-        android:title="미정" />
+        android:icon="@drawable/ic_recognition"
+        android:title="얼굴인식" />
 </menu>
