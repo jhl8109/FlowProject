@@ -122,7 +122,6 @@ class FragmentOne : Fragment() {
     }
 
     private fun gallery() {
-        Log.e("test", "reach here 2")
         var intent = Intent()
         intent.type = "image/*"
         intent.action = Intent.ACTION_GET_CONTENT
@@ -132,8 +131,6 @@ class FragmentOne : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) { //startActivityForResult를 통해서 기본 카메라 앱으로 부터 받아온 사진 결과값
         super.onActivityResult(requestCode, resultCode, data)
-
-        Log.e("test", tempposition)
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             var bitmap: Bitmap
@@ -155,7 +152,6 @@ class FragmentOne : Fragment() {
 
         //사진을 성공적으로 가져 온 경우
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK ) {
-            Log.e("test","reachhere3")
             var uri = data?.data
 
             urilist[tempposition.toInt()] = uri
@@ -292,8 +288,6 @@ class FragmentOne : Fragment() {
                         if(putlocation.equals("")){
                             putlocation = userList[position].address
                         }
-//                        mAdapter.removeItem(position)
-//                        mAdapter.addItem(DataVo(putusername, putlocation, putphoneNumber, "user_img_01"))
                         mAdapter.editItem(DataVo(putusername, putlocation, putphoneNumber, "user_img_01"), position)
                         alertDialog.dismiss()
                     }

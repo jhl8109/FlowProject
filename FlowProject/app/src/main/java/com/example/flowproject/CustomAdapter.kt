@@ -38,7 +38,6 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
     fun editimage(uri: Uri?, position:Int){
 //        val v = view.findViewById<ImageView>(R.id.userImg)
 //        urilist[position] = uri
-        Log.e("test", uri.toString())
         Glide.with(viewholderlist[position].itemView)
             .load(urilist[position])
             .error(R.drawable.noimage)
@@ -101,7 +100,6 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
 
         fun bind(dataVo: DataVo, context: Context) {
             //사진 처리
-            Log.e("test", "bind")
             if (dataVo.photo != "") {
                 val resourceId =
                     context.resources.getIdentifier(dataVo.photo, "drawable", context.packageName)
@@ -124,7 +122,6 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        Log.e("test", "onCreateViewHolder")
         val view = LayoutInflater.from(context).inflate(R.layout.view_item_layout, parent, false)
         return ItemViewHolder(view)
     }
@@ -132,9 +129,6 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.bind(dataList[position], context)
-        Log.e("test", "onBindViewHolder")
-//        Log.e("test", position.toString())
-//        viewholderlist.add(holder)
         if(viewholderlist.size == position){
             viewholderlist.add(holder)
         }
@@ -148,7 +142,6 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
         }else {
             urilist.add(null)
         }
-//        Log.e("test", urilist[position].toString())
 //        holder.itemView.setOnClickListener { view ->
 //            setPosition(position)
 //            Toast.makeText(view.context, "이름:" + dataList[position].name + " " + "전화번호:" + dataList[position].phonenumber + " 클릭!", Toast.LENGTH_SHORT).show()

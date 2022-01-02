@@ -1,14 +1,14 @@
 package com.example.flowproject
 
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
-
 interface RetrofitService {
-    @FormUrlEncoded
+    @Multipart
     @POST("v2/vision/face/detect")
     fun getOnlineChannel(
         @Header("Authorization") key : String,
-        @Field("image_url") source :String
+        @Part image : MultipartBody.Part?
     ): Call<Image>
 }

@@ -111,7 +111,6 @@ class FragmentTwo : Fragment() {
             for (j in 0..3) {
                 var imageView = ImageView(context)
                 imageView.layoutParams = imageLayoutParams
-                imageView.setPadding(0,5,0,5)
 
                 imageView.clipToOutline =true
 
