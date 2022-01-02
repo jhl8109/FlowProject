@@ -9,14 +9,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainActivity : AppCompatActivity() {
     private val fragmentOne by lazy { FragmentOne() }
     private val fragmentTwo by lazy { FragmentTwo() }
-    private val fragmentThree by lazy { FragmentFour() }
+    private val fragmentThree by lazy { FragmentThree() }
+    private val fragmentFour by lazy { FragmentFour() }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         var actionBar = supportActionBar
         actionBar?.hide()
-
         var bnv_main = findViewById<BottomNavigationView>(R.id.bnv_main)
         bnv_main.run {
             setOnItemSelectedListener {
@@ -42,9 +43,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun changeFragment(fragment: Fragment) {
+       supportFragmentManager
+           .beginTransaction()
+           .replace(R.id.fl_container, fragment)
+           .commit()
+    }
+
+    fun changeFragmentFour(){
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fl_container, fragment)
+            .replace(R.id.fl_container, fragmentFour)
             .commit()
     }
+
+    fun changeFragmentThree(){
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fl_container, fragmentThree)
+            .commit()
+    }
+
 }

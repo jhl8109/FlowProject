@@ -119,6 +119,7 @@ class FragmentThree : Fragment() {
                 bitmap = ImageDecoder.decodeBitmap(decode)
             }
             imageView.setImageURI(photoURI)
+            requireActivity().intent.putExtra("photo",photoURI)
             savePhoto(bitmap)
         }
         //사진을 성공적으로 가져 온 경우
@@ -131,6 +132,7 @@ class FragmentThree : Fragment() {
             val file : File = bitmapToFile(image,path)
 
             imageView.setImageURI(uri)
+            requireActivity().intent.putExtra("photo",uri)
 
             var requestBody = file.asRequestBody("image/*".toMediaType())
             var body = MultipartBody.Part.createFormData("image",file.name,requestBody)
@@ -168,6 +170,12 @@ class FragmentThree : Fragment() {
                 var result = response.body()
                 if(response.isSuccessful) {
                     Log.e("success", result!!.toString())
+                    val mainActivity = context as MainActivity
+                    mainActivity.changeFragmentFour()
+                    activity!!.intent.putExtra("age",result.result.faces[0].faceAttr.age)
+                    activity!!.intent.putExtra("gender",result.result.faces[0].faceAttr.gender.male)
+
+
                 } else {
                     Log.e("failed", response.code().toString())
                     Log.e("failed",response.errorBody()?.string()!!)
