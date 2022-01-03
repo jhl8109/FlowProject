@@ -5,9 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Gallery::class], version = 1, exportSchema = false)
+@Database(entities = [Gallery::class, Contact::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun photosDao(): PhotosDao
+
+    abstract fun contactDao(): ContactDao
 
     companion object {
         private var instance: AppDatabase? = null
