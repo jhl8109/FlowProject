@@ -19,8 +19,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -30,6 +32,7 @@ import com.bumptech.glide.Glide
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,6 +51,7 @@ class FragmentThree : Fragment() {
     val REQUEST_IMAGE_CAPTURE = 1
     lateinit var curPhotoPath: String
     lateinit var imageView: ImageView
+    lateinit var textView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,6 +144,8 @@ class FragmentThree : Fragment() {
 
     }
     fun serverResult(file:MultipartBody.Part){
+        textView.text = "                분석중"
+        textView.visibility = View.VISIBLE
         val retrofit = Retrofit.Builder().baseUrl("https://dapi.kakao.com/")
             .addConverterFactory(GsonConverterFactory.create()).build()
         val service = retrofit.create(RetrofitService::class.java)
@@ -170,11 +176,13 @@ class FragmentThree : Fragment() {
                 if(response.isSuccessful) {
                     Log.e("success", result!!.toString())
                     val mainActivity = context as MainActivity
-
                     if(result.result.faces.isNotEmpty()) {
                         activity!!.intent.putExtra("age",result.result.faces[0].faceAttr.age)
                         activity!!.intent.putExtra("gender",result.result.faces[0].faceAttr.gender.male)
                         mainActivity.changeFragmentFour()
+                    }else{
+                        textView.text = "    사진 인식에 실패했어요"
+                        textView.visibility = View.VISIBLE
                     }
                 } else {
                     Log.e("failed", response.code().toString())
@@ -260,7 +268,11 @@ class FragmentThree : Fragment() {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_three,container,false)
         imageView = v.findViewById<ImageView>(R.id.faceimage)
+        textView = v.findViewById<TextView>(R.id.textView2)
         val photobutton = v.findViewById<Button>(R.id.photobutton)
+
+        textView.visibility = View.INVISIBLE
+
         Glide.with(this)
             .load("")
             .placeholder(R.drawable.defaultimage)
