@@ -13,7 +13,7 @@
 
 |  <img src = "https://user-images.githubusercontent.com/77967396/147923683-42ad0323-a976-4675-ad6d-12a20926e477.gif"> |  <img src = "https://user-images.githubusercontent.com/77967396/147923980-682a7583-92e8-42c2-ae07-d95904272c86.gif"> |  <img src = "https://user-images.githubusercontent.com/77967396/147924183-8163ddf7-73fc-4c54-9ba4-67b449b164e4.gif"> |
 |:--------|:--------:|--------:|
-|연락처 추가, 전화 걸기 및 메세지 보내기 | 사진 설정 및 연락처 수정 |<div align="center"> 연락처 삭제 및 데이터 유지 </div>|
+|<div align="center"> 연락처 연동 </div>| 사진 설정 및 연락처 수정 |<div align="center"> 연락처 삭제 및 데이터 유지 </div>|
 
 ### 갤러리
 - 버튼에 연결된 카메라, 갤러리로 이미지를 저장할 수 있다.
