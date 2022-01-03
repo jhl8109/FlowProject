@@ -2,7 +2,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/borderline2">
+    android:background="@drawable/borderline2"
+    android:padding="10dp">
 
     <!--    <ImageView-->
     <!--        android:layout_width="match_parent"-->
@@ -16,7 +17,8 @@
         android:id="@+id/textView1"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="  Type Information"
+        android:text="연락처 저장"
+        android:fontFamily="@font/jua"
         android:textColor="#C8000000"
         android:textSize="30dp"
         android:gravity="bottom"
@@ -37,7 +39,8 @@
         android:layout_marginTop="16dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="username"
+        android:hint="이름"
+        android:fontFamily="@font/jua"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -48,7 +51,8 @@
         android:layout_marginTop="16dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="phoneNumber"
+        android:hint="전화번호"
+        android:fontFamily="@font/jua"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -59,7 +63,8 @@
         android:layout_marginTop="16dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="location"
+        android:hint="거주지"
+        android:fontFamily="@font/jua"
         android:inputType="textEmailAddress" />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -70,5 +75,6 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/longclick_button_design"
-        android:text="ok" />
+        android:text="확인"
+        android:fontFamily="@font/jua"/>
 </LinearLayout>

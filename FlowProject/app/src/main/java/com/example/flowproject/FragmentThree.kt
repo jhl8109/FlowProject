@@ -52,6 +52,7 @@ class FragmentThree : Fragment() {
     lateinit var curPhotoPath: String
     lateinit var imageView: ImageView
     lateinit var textView: TextView
+    lateinit var loadingImage : ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,7 +134,6 @@ class FragmentThree : Fragment() {
             var input = requireActivity().contentResolver.openInputStream(uri!!)
             var image = BitmapFactory.decodeStream(input)
             val file : File = bitmapToFile(image,path)
-
             imageView.setImageURI(uri)
             requireActivity().intent.putExtra("photo",uri)
 
@@ -144,31 +144,13 @@ class FragmentThree : Fragment() {
 
     }
     fun serverResult(file:MultipartBody.Part){
-        textView.text = "                분석중"
+        textView.text = "분석중"
         textView.visibility = View.VISIBLE
+        Glide.with(this).load(R.drawable.loading).into(loadingImage)
         val retrofit = Retrofit.Builder().baseUrl("https://dapi.kakao.com/")
             .addConverterFactory(GsonConverterFactory.create()).build()
         val service = retrofit.create(RetrofitService::class.java)
 
-//        service.getOnlineChannel("KakaoAK 16b9d5d1f68577d49a3ddcdae9f7c5ca",
-//            file)?.enqueue(object : Callback<Image>{
-//            override fun onResponse(call: Call<Image>, response: Response<Image>) {
-//                var result = response.body()
-//                if(response.isSuccessful) {
-//                    result!!.result.faces[0].faceAttr.age
-//                    Toast.makeText(requireContext(),result!!.result.faces[0].faceAttr.age.toString() , Toast.LENGTH_SHORT)
-//                    Log.e("success", result!!.result.faces[0].faceAttr.age.toString())
-//                    Log.e("success", result!!.toString())
-//                } else {
-//                    Log.e("failed", result.toString())
-//                    Log.e("failed",response.code().toString())
-//                }
-//            }
-//            override fun onFailure(call: Call<Image>, t: Throwable) {
-//                Log.e("실패2","실패2")
-//                t.printStackTrace()
-//            }
-//        })
         service.getOnlineChannel("KakaoAK 16b9d5d1f68577d49a3ddcdae9f7c5ca",
             file)?.enqueue(object : Callback<Image>{
             override fun onResponse(call: Call<Image>, response: Response<Image>) {
@@ -181,8 +163,9 @@ class FragmentThree : Fragment() {
                         activity!!.intent.putExtra("gender",result.result.faces[0].faceAttr.gender.male)
                         mainActivity.changeFragmentFour()
                     }else{
-                        textView.text = "    사진 인식에 실패했어요"
+                        textView.text = "사진 인식에 실패했어요"
                         textView.visibility = View.VISIBLE
+                        loadingImage.visibility = View.INVISIBLE
                     }
                 } else {
                     Log.e("failed", response.code().toString())
@@ -269,6 +252,7 @@ class FragmentThree : Fragment() {
         val v = inflater.inflate(R.layout.fragment_three,container,false)
         imageView = v.findViewById<ImageView>(R.id.faceimage)
         textView = v.findViewById<TextView>(R.id.textView2)
+        loadingImage = v.findViewById(R.id.loadingImage)
         val photobutton = v.findViewById<Button>(R.id.photobutton)
 
         textView.visibility = View.INVISIBLE
