@@ -23,6 +23,7 @@ import android.widget.Toast
 //import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -69,7 +70,8 @@ class FragmentOne : Fragment() {
     lateinit var curPhotoPath: String
     lateinit var mAdapter: CustomAdapter
     lateinit var tempposition: String
-
+    var db : AppDatabase? = null
+    lateinit var savedContacts: List<Contact>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -147,6 +149,8 @@ class FragmentOne : Fragment() {
             }
 
             urilist[tempposition.toInt()] = photoURI
+            savedContacts[tempposition.toInt()].uri = photoURI.toString()
+            db!!.contactDao().updateUsers(savedContacts[tempposition.toInt()])
             mAdapter.editimage(photoURI, tempposition.toInt())
         }
 
@@ -155,6 +159,8 @@ class FragmentOne : Fragment() {
             var uri = data?.data
 
             urilist[tempposition.toInt()] = uri
+            savedContacts[tempposition.toInt()].uri = uri.toString()
+            db!!.contactDao().updateUsers(savedContacts[tempposition.toInt()])
             mAdapter.editimage(uri, tempposition.toInt())
         }
 
@@ -174,6 +180,21 @@ class FragmentOne : Fragment() {
         // Inflate the layout for this fragment
         v =  inflater.inflate(R.layout.fragment_one, container, false)
         val recycler_view = v.findViewById<RecyclerView>(R.id.recycler_view)
+        userList = ArrayList()
+        urilist = ArrayList()
+
+        db = AppDatabase.getInstance(requireContext())
+        savedContacts = db!!.contactDao().getAll()
+        Log.e("test 1", savedContacts.size.toString())
+        if(savedContacts.size > 0){
+            Log.e("test 2", savedContacts[0].name)
+        }
+        if(savedContacts.size > 0){
+            for(i: Int in 0..savedContacts.size-1){
+                userList.add(DataVo(savedContacts[i].name, savedContacts[i].address,savedContacts[i].phonenumber,savedContacts[i].photo))
+                urilist.add(savedContacts[i].uri.toUri())
+            }
+        }
 
         fun loadJSONFileFromAsset(): String {
             return try {
@@ -191,8 +212,7 @@ class FragmentOne : Fragment() {
                 return ""
             }
         }
-        if (a == 0) {
-            a++
+        if (savedContacts.size == 0) {
             try {
                 val assetManager: AssetManager = resources.assets
                 val inputStream = assetManager.open("sample_code.json")
@@ -215,6 +235,7 @@ class FragmentOne : Fragment() {
                         baseInfo.getString("photo")
                     )
                     userList.add(tempData)
+                    db?.contactDao()?.insertAll(Contact(null, tempData.name, tempData.address, tempData.phonenumber, tempData.photo, "null"))
                     urilist.add(null)
                 }
             } catch (e: JSONException) {
@@ -288,6 +309,12 @@ class FragmentOne : Fragment() {
                         if(putlocation.equals("")){
                             putlocation = userList[position].address
                         }
+
+                        savedContacts[position].name = putusername
+                        savedContacts[position].address = putlocation
+                        savedContacts[position].phonenumber = putphoneNumber
+
+                        db!!.contactDao().updateUsers(savedContacts[position])
                         mAdapter.editItem(DataVo(putusername, putlocation, putphoneNumber, "user_img_01"), position)
                         alertDialog.dismiss()
                     }
@@ -315,6 +342,7 @@ class FragmentOne : Fragment() {
                 }
                 delete.setOnClickListener {
                     alertDialog.dismiss()
+                    db!!.contactDao().delete(savedContacts[position])
                     mAdapter.removeItem(position)
                 }
 
@@ -368,6 +396,7 @@ class FragmentOne : Fragment() {
 
                 alertDialog.dismiss()
                 mAdapter.addItem(DataVo(userName.toString(), location.toString(), phoneNumber.toString(), "user_img_01"))
+                db?.contactDao()?.insertAll(Contact(null, userName.toString(), location.toString(), phoneNumber.toString(), "user_img_01", "null"))
                 urilist.add(null)
             }
 

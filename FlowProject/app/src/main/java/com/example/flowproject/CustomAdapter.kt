@@ -133,7 +133,7 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
             viewholderlist.add(holder)
         }
         if(urilist.size > position){
-            if(urilist[position] != null) {
+            if(urilist[position] != null && urilist[position].toString() != "null" ) {
                 Glide.with(holder.itemView)
                     .load(urilist[position])
                     .circleCrop()
