@@ -52,9 +52,6 @@ class FragmentFour : Fragment() {
         var gender = requireActivity().intent.extras?.get("gender").toString().toFloat() * 100
         var genderint = gender.toInt()
 
-//        Log.e("test age", requireActivity().intent.extras?.get("age").toString())
-//        Log.e("test gender", requireActivity().intent.extras?.get("gender").toString())
-
 
         val chart = v.findViewById<HorizontalBarChart>(R.id.barchart)
         val progressBar1 = v.findViewById<ProgressBar>(R.id.progressBar1)
@@ -91,7 +88,7 @@ class FragmentFour : Fragment() {
         chart.xAxis.setDrawAxisLine(false)
         chart.xAxis.setDrawLabels(false)
         chart.axisLeft.axisMinimum = 0F
-        chart.axisLeft.axisMaximum = 50F
+        chart.axisLeft.axisMaximum = 100F
         chart.axisLeft.textSize = 15f
         chart.xAxis.setCenterAxisLabels(false)
 
@@ -110,7 +107,7 @@ class FragmentFour : Fragment() {
         //draw chart
         chart.invalidate()
 
-        val imageView = v.findViewById<ImageView>(R.id.resultfaceiamge)
+        val imageView = v.findViewById<ImageView>(R.id.faceimage)
         var photoURI = requireActivity().intent.extras?.get("photo").toString()
 
 

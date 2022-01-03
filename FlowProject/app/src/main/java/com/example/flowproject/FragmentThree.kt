@@ -26,6 +26,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -169,11 +170,12 @@ class FragmentThree : Fragment() {
                 if(response.isSuccessful) {
                     Log.e("success", result!!.toString())
                     val mainActivity = context as MainActivity
-                    mainActivity.changeFragmentFour()
-                    activity!!.intent.putExtra("age",result.result.faces[0].faceAttr.age)
-                    activity!!.intent.putExtra("gender",result.result.faces[0].faceAttr.gender.male)
 
-
+                    if(result.result.faces.isNotEmpty()) {
+                        activity!!.intent.putExtra("age",result.result.faces[0].faceAttr.age)
+                        activity!!.intent.putExtra("gender",result.result.faces[0].faceAttr.gender.male)
+                        mainActivity.changeFragmentFour()
+                    }
                 } else {
                     Log.e("failed", response.code().toString())
                     Log.e("failed",response.errorBody()?.string()!!)
@@ -257,24 +259,15 @@ class FragmentThree : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_three,container,false)
-
-        imageView = v.findViewById<ImageView>(R.id.faceiamge)
+        imageView = v.findViewById<ImageView>(R.id.faceimage)
         val photobutton = v.findViewById<Button>(R.id.photobutton)
-        val sendbutton = v.findViewById<Button>(R.id.sendbutton)
-
+        Glide.with(this)
+            .load("")
+            .placeholder(R.drawable.defaultimage)
+            .into(imageView);
 
         photobutton.setOnClickListener{
             showSelectCameraOrImage()
-        }
-
-        sendbutton.setOnClickListener{
-            val dialogView = layoutInflater.inflate(R.layout.result, null)
-            val alertDialog = AlertDialog.Builder(v.context)
-                .setView(dialogView)
-                .create()
-
-            alertDialog.show()
-            alertDialog.window?.setBackgroundDrawableResource(R.drawable.borderline)
         }
 
         return v
