@@ -134,6 +134,9 @@ class FragmentTwo : Fragment() {
                     imageView.setPadding(0,5,0,5)
                     imageView.background = requireContext().getDrawable(R.drawable.photo_small_border)
                     imageView.clipToOutline =true
+                    imageView.minimumScale = 0.99F
+                    imageView.mediumScale = 0.9999F
+                    imageView.maximumScale = 1.0001F
                     if (20+x*4+i < bitSize)  {
                         Glide.with(this)
                             .load(bitmapList[20+4*x+i])
