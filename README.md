@@ -24,13 +24,13 @@
 ### 얼굴 인식!
 - 카메라, 갤러리를 활용하여 예상 나이와 성별에 대하여 알 수 있다.
 - 카카오 API를 활용하였다.
-
+<img src = "https://user-images.githubusercontent.com/78259314/147924680-32587166-c91a-4497-919c-6cbb9a86fc95.gif">
 --------
 ## 구현
 
 ### 연락처
 - Room DB 사용 
 ### 갤러리
-- Room DB 사용
+- Room DB 사용 , 확대-축소가 가능한 PhotoView 활용, 동적으로 이미지 뷰 할당
 ### 얼굴 인식 API
 - 카카오 API 사용, MPAndroidChart 라이브러리 활용
