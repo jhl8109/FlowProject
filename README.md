@@ -37,3 +37,8 @@
 <img src = "https://user-images.githubusercontent.com/78259314/148014471-7eab1430-9c09-403f-b5ef-eedf3d736bf2.png">
 <img src = "https://user-images.githubusercontent.com/78259314/148014481-21591d51-16ea-4769-b230-1fd7835d62ff.png">
 
+## 시행착오와 개선방안
+
+- 권한 설정 및 카메라,갤러리의 이미지 경로 설정에서 어려움을 겪었습니다. 각 uri파일의 영원한 권한을 부여하여 해결하였습니다.
+- Camera API 1 썼는데 더 좋은 최신 버전의 Camera API를 사용하는 방법이 더 좋을 것이라고 생각됩니다.
+
