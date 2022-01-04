@@ -13,7 +13,7 @@
         android:roundIcon="@drawable/app_icon"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:hardwareAccelerated="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.FlowProject">
         <activity
             android:name=".MainActivity"
