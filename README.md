@@ -1,6 +1,5 @@
 # 몰입캠프 개발 1주차
 3개의 탭(=> 연락처, 갤러리, 얼굴인식)으로 구성된 앱 <br>
-[다운로드](https://drive.google.com/uc?export=download&id=1nh6FZW_TQKxLDCSDft50oXQGyO7wimce)
 
 ## 팀원
 [박정웅](https://github.com/yeolia327)
