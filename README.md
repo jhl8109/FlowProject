@@ -36,7 +36,7 @@
 - 카카오 API 사용, MPAndroidChart 라이브러리 활용
 <img src = "https://user-images.githubusercontent.com/78259314/148014471-7eab1430-9c09-403f-b5ef-eedf3d736bf2.png">
 <img src = "https://user-images.githubusercontent.com/78259314/148014481-21591d51-16ea-4769-b230-1fd7835d62ff.png">
-``java
+<pre><code>
   fun serverResult(file:MultipartBody.Part){
         textView.text = "분석중"
         textView.visibility = View.VISIBLE
@@ -71,7 +71,7 @@
             }
         })
     }
-```
+</code></pre>
 
 ## 시행착오와 개선방안
 
