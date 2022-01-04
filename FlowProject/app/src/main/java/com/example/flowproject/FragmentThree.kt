@@ -148,19 +148,19 @@ class FragmentThree : Fragment() {
     fun serverResult(file:MultipartBody.Part){
         textView.text = "분석중"
         textView.visibility = View.VISIBLE
-        Glide.with(this).load(R.drawable.loading).into(loadingImage)
-        val retrofit = Retrofit.Builder().baseUrl("https://dapi.kakao.com/")
+        Glide.with(this).load(R.drawable.loading).into(loadingImage)        //로딩 GIF이미지를 넣음
+        val retrofit = Retrofit.Builder().baseUrl("https://dapi.kakao.com/") //Retrofit2를 사용하여 카카오에 POST메소드 통신
             .addConverterFactory(GsonConverterFactory.create()).build()
-        val service = retrofit.create(RetrofitService::class.java)
+        val service = retrofit.create(RetrofitService::class.java)                  // 헤더와 보내는 형식(Multipart)을 지정함
 
-        service.getOnlineChannel("KakaoAK 16b9d5d1f68577d49a3ddcdae9f7c5ca",
+        service.getOnlineChannel("KakaoAK 16b9d5d1f68577d49a3ddcdae9f7c5ca",    // 개인 키 설정
             file)?.enqueue(object : Callback<Image>{
-            override fun onResponse(call: Call<Image>, response: Response<Image>) {
-                var result = response.body()
+            override fun onResponse(call: Call<Image>, response: Response<Image>) { // Retrofit2에서 지원하는 방식에 의해서
+                var result = response.body()                                        // 미리 만들어 놓은 Image 클래스로 파싱됨
                 if(response.isSuccessful) {
                     Log.e("success", result!!.toString())
                     val mainActivity = context as MainActivity
-                    if(result.result.faces.isNotEmpty()) {
+                    if(result.result.faces.isNotEmpty()) {                          //intent를 통해 fragment간 response결과값을 공유함
                         activity!!.intent.putExtra("age",result.result.faces[0].faceAttr.age)
                         activity!!.intent.putExtra("gender",result.result.faces[0].faceAttr.gender.male)
                         mainActivity.changeFragmentFour()
@@ -169,9 +169,9 @@ class FragmentThree : Fragment() {
                         textView.visibility = View.VISIBLE
                         loadingImage.visibility = View.INVISIBLE
                     }
-                } else {
                     Log.e("failed", response.code().toString())
                     Log.e("failed",response.errorBody()?.string()!!)
+                } else {
                 }
             }
             override fun onFailure(call: Call<Image>, t: Throwable) {

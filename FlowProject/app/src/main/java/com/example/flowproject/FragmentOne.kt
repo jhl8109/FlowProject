@@ -286,7 +286,6 @@ class FragmentOne : Fragment() {
         mAdapter.setMyItemClickListener(object : CustomAdapter.MyItemClickListener {
             override fun onItemClick(position: Int) {
                 mAdapter.setPosition(position)
-                Toast.makeText(v.context, "이름:" + userList[position].name + "\n" + "전화번호:" + userList[position].phonenumber, Toast.LENGTH_SHORT).show()
             }
 
             override fun onLongClick(position: Int) {
