@@ -1,25 +1,16 @@
 package com.example.flowproject
 
-//import android.app.AlertDialog
-import android.app.AlertDialog
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-//import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import android.widget.Toast
-import androidx.annotation.Nullable
 import com.bumptech.glide.Glide
-import com.google.android.material.button.MaterialButton
 import kotlinx.android.synthetic.main.view_item_layout.view.*
 
-//import com.google.android.material.button.MaterialButton
 
 
 class CustomAdapter(private val context: Context, private val dataList: ArrayList<DataVo>, private val urilist: ArrayList<Uri?>) :
@@ -27,17 +18,14 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
 
     private var viewholderlist: ArrayList<ItemViewHolder> = ArrayList()
 
-    //
     interface MyItemClickListener {
         fun onItemClick(position: Int)
         fun onLongClick(position: Int)
     }
-    //
+
     private lateinit var mItemClickListener: MyItemClickListener
 
     fun editimage(uri: Uri?, position:Int){
-//        val v = view.findViewById<ImageView>(R.id.userImg)
-//        urilist[position] = uri
         Glide.with(viewholderlist[position].itemView)
             .load(urilist[position])
             .error(R.drawable.noimage)
@@ -71,7 +59,6 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
             dataList.removeAt(position)
             viewholderlist.removeAt(position)
             urilist.removeAt(position)
-            //notifyItemRemoved(position)
             //갱신처리 반드시 해야함
             notifyDataSetChanged()
         }
@@ -115,7 +102,7 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
 
             //TextView에 데이터 세팅
             userName.text = dataVo.name
-            userPay.text = dataVo.phonenumber.toString()
+            userPay.text = dataVo.phonenumber
             userAddress.text = dataVo.address
         }
     }
@@ -142,16 +129,6 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
         }else {
             urilist.add(null)
         }
-//        holder.itemView.setOnClickListener { view ->
-//            setPosition(position)
-//            Toast.makeText(view.context, "이름:" + dataList[position].name + " " + "전화번호:" + dataList[position].phonenumber + " 클릭!", Toast.LENGTH_SHORT).show()
-//        }
-//
-//        holder.itemView.setOnLongClickListener { view ->
-//            setPosition(position)
-//            Toast.makeText(view.context, "이름:" + dataList[position].name + " " + "전화번호:" + dataList[position].phonenumber + " 롱클릭!", Toast.LENGTH_SHORT).show()
-//            return@setOnLongClickListener true
-//        }
     }
 
 

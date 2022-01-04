@@ -149,6 +149,10 @@ class FragmentOne : Fragment() {
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK ) {
             var uri = data?.data
 
+            Log.e("uri", uri.toString())
+            Log.e("savedContacts size", savedContacts.size.toString())
+            Log.e("position", tempposition)
+
             urilist[tempposition.toInt()] = uri
             savedContacts[tempposition.toInt()].uri = uri.toString()
             db!!.contactDao().updateUsers(savedContacts[tempposition.toInt()])
@@ -237,6 +241,10 @@ class FragmentOne : Fragment() {
         }
 
         mAdapter = CustomAdapter(v.context, userList, urilist)
+        Log.e("userList check", userList.size.toString())
+        for(i:Int in 0..urilist.size-1){
+            Log.e("urilist check", urilist[i].toString())
+        }
         mAdapter.setMyItemClickListener(object : CustomAdapter.MyItemClickListener {
             override fun onItemClick(position: Int) {
                 mAdapter.setPosition(position)
@@ -388,6 +396,8 @@ class FragmentOne : Fragment() {
                 alertDialog.dismiss()
                 mAdapter.addItem(DataVo(userName.toString(), location.toString(), phoneNumber.toString(), "user_img_01"))
                 db?.contactDao()?.insertAll(Contact(null, userName.toString(), location.toString(), phoneNumber.toString(), "user_img_01", "null"))
+                savedContacts = db!!.contactDao().getAll()
+
                 urilist.add(null)
             }
 
