@@ -1,8 +1,11 @@
 package com.example.flowproject
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -21,6 +24,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import java.io.File
@@ -254,6 +258,29 @@ class FragmentThree : Fragment() {
         textView = v.findViewById<TextView>(R.id.textView2)
         loadingImage = v.findViewById(R.id.loadingImage)
         val photobutton = v.findViewById<Button>(R.id.photobutton)
+
+        val REQUEST_EXTERNAL_STORAGE = 1
+        val PERMISSIONS_STORAGE = arrayOf<String>(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+
+        fun verifyStoragePermissions(context: Context) {
+            // Check if we have write permission
+            val permission = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                // We don't have permission so prompt the user
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+                );
+            }
+        }
+
+        verifyStoragePermissions(v.context)
+
 
         textView.visibility = View.INVISIBLE
 
