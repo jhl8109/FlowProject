@@ -21,7 +21,7 @@
 - Room DB를 사용하여 앱을 끄더라도 저장한 이미지가 유지된다.
 <img src = "https://user-images.githubusercontent.com/78259314/147910507-8b14c590-3d01-4581-86e2-0263ef5f51fd.gif">
 
-### 얼굴 인식!
+### 얼굴 인식
 - 카메라, 갤러리를 활용하여 예상 나이와 성별에 대하여 알 수 있다.
 - 카카오 API를 활용하였다.
 <img src = "https://user-images.githubusercontent.com/78259314/147924680-32587166-c91a-4497-919c-6cbb9a86fc95.gif">
