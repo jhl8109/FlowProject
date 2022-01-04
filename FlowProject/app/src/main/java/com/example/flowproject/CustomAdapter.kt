@@ -2,6 +2,7 @@ package com.example.flowproject
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,6 +120,8 @@ class CustomAdapter(private val context: Context, private val dataList: ArrayLis
         if(viewholderlist.size == position){
             viewholderlist.add(holder)
         }
+        Log.e("test here", urilist.size.toString())
+        Log.e("urilist", urilist[position].toString())
         if(urilist.size > position){
             if(urilist[position] != null && urilist[position].toString() != "null" ) {
                 Glide.with(holder.itemView)
