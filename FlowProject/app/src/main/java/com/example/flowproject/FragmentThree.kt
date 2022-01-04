@@ -1,9 +1,7 @@
 package com.example.flowproject
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
@@ -22,7 +20,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
-import androidx.core.view.isVisible
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -32,7 +29,6 @@ import com.bumptech.glide.Glide
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -178,6 +174,7 @@ class FragmentThree : Fragment() {
             }
         })
     }
+
     fun getFullPath(uri: Uri) :String? {
         val context = requireContext()
         val contentResolver = context.contentResolver ?: return null
@@ -208,12 +205,6 @@ class FragmentThree : Fragment() {
         }catch (e: IOException) {
             e.printStackTrace()
         }
-        val lat = exif?.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
-        // TAG_GPS_LATITUDE_REF: Indicates whether the latitude is north or south latitude
-        val lat_ref = exif?.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
-        val lon = exif?.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
-        // TAG_GPS_LONGITUDE_REF: Indicates whether the longitude is east or west longitude.
-        val lon_ref = exif?.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
     }
     fun bitmapToFile(bitmap:Bitmap, path : String?) : File {
         val file = File(path)
@@ -224,6 +215,7 @@ class FragmentThree : Fragment() {
         out.close()
         return file
     }
+
     fun savePhoto(bitmap: Bitmap) {
         val folderPath = Environment.getExternalStorageDirectory().absolutePath + "/Pictures/" //사진 폴더에 저장 경로 선언
         val timeStamp: String = SimpleDateFormat("yyyy-MM-dd-HHmmss").format(Date())
@@ -236,8 +228,6 @@ class FragmentThree : Fragment() {
         val out = FileOutputStream(folderPath + fileName)
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
         val file = File(folderPath+fileName)
-        Log.e("file",file.toString())
-        Log.e("file",file.name)
         var requestBody = file.asRequestBody("image/*".toMediaType())
         var body = MultipartBody.Part.createFormData("image",file.name,requestBody)
         serverResult(body)
