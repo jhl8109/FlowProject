@@ -4,14 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
@@ -34,7 +32,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class FragmentTwo : Fragment() {
-    val mainActivity = MainActivity()
     lateinit var curPhotoPath: String //문자열 형태의 사진 경로 값(초기값을 null로 시작하고 싶을 때)
     lateinit var photoURI: Uri
     val REQUEST_IMAGE_CAPTURE = 1 //카메라 사진촬영 요청코드
@@ -70,10 +67,10 @@ class FragmentTwo : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_two, container, false)
-        Log.e("onCreateView!","onCreateView!")
 
         db = AppDatabase.getInstance(requireContext())
         val savedGallery = db!!.photosDao().getAll()
+
         galleryList = ArrayList()
         if(savedGallery.isNotEmpty()){
             galleryList.addAll(savedGallery)
@@ -101,6 +98,7 @@ class FragmentTwo : Fragment() {
             linearLayout.weightSum = 4.0F
             linearLayout.layoutParams = layoutParams
             linearLayoutList.add(linearLayout)
+
             for (j in 0..3) {
                 var imageView = PhotoView(context)
                 imageView.minimumScale = 0.99F
@@ -256,6 +254,7 @@ class FragmentTwo : Fragment() {
             .apply { curPhotoPath = absolutePath }
     }
 
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) { //startActivityForResult를 통해서 기본 카메라 앱으로 부터 받아온 사진 결과값
         super.onActivityResult(requestCode, resultCode, data)
@@ -321,15 +320,6 @@ class FragmentTwo : Fragment() {
         }catch (e: IOException) {
             e.printStackTrace()
         }
-        val lat = exif?.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
-        // TAG_GPS_LATITUDE_REF: Indicates whether the latitude is north or south latitude
-        val lat_ref = exif?.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
-        val lon = exif?.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
-        // TAG_GPS_LONGITUDE_REF: Indicates whether the longitude is east or west longitude.
-        val lon_ref = exif?.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
-
-        Log.d("latitude",lat.toString())
-        Log.d("longtitude",lon.toString())
     }
     fun refreshFragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -338,22 +328,5 @@ class FragmentTwo : Fragment() {
         } else {
             requireFragmentManager().beginTransaction().detach(this).attach(this).commit();
         }
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FragmentTwo.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FragmentTwo().apply {
-
-            }
     }
 }

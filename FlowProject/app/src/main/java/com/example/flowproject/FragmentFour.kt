@@ -1,9 +1,7 @@
 package com.example.flowproject
 
 import android.animation.ObjectAnimator
-import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,27 +9,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
-import androidx.core.view.marginLeft
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
-import android.net.Uri
 import androidx.core.net.toUri
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FragementFour.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FragmentFour : Fragment() {
 
 
@@ -122,11 +106,6 @@ class FragmentFour : Fragment() {
 
 
         return v
-    }
-
-    override fun onStart() {
-        super.onStart()
-
     }
 
 }
