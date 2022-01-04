@@ -1,8 +1,11 @@
 package com.example.flowproject
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -19,6 +22,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -148,7 +152,10 @@ class FragmentOne : Fragment() {
         //사진을 성공적으로 가져 온 경우
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK ) {
             var uri = data?.data
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                requireContext().grantUriPermission(requireContext().applicationContext.packageName,uri!!,Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
             Log.e("uri", uri.toString())
             Log.e("savedContacts size", savedContacts.size.toString())
             Log.e("position", tempposition)
@@ -178,12 +185,42 @@ class FragmentOne : Fragment() {
         userList = ArrayList()
         urilist = ArrayList()
 
+
+
+//        val REQUEST_EXTERNAL_STORAGE = 1
+//        val PERMISSIONS_STORAGE = arrayOf<String>(
+//            Manifest.permission.READ_EXTERNAL_STORAGE,
+//            Manifest.permission.WRITE_EXTERNAL_STORAGE
+//        )
+//
+//        fun verifyStoragePermissions(context: Context) {
+//            // Check if we have write permission
+//            val permission1 = ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//            val permission2 = ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+//
+//            if (permission1 != PackageManager.PERMISSION_GRANTED) {
+//                // We don't have permission so prompt the user
+//                ActivityCompat.requestPermissions(
+//                    requireActivity(),
+//                    PERMISSIONS_STORAGE,
+//                    REQUEST_EXTERNAL_STORAGE
+//                );
+//            }
+//            if (permission2 != PackageManager.PERMISSION_GRANTED) {
+//                // We don't have permission so prompt the user
+//                ActivityCompat.requestPermissions(
+//                    requireActivity(),
+//                    PERMISSIONS_STORAGE,
+//                    REQUEST_EXTERNAL_STORAGE
+//                );
+//            }
+//        }
+//
+//        verifyStoragePermissions(v.context)
+
         db = AppDatabase.getInstance(requireContext())
         savedContacts = db!!.contactDao().getAll()
         Log.e("test 1", savedContacts.size.toString())
-        if(savedContacts.size > 0){
-            Log.e("test 2", savedContacts[0].name)
-        }
         if(savedContacts.size > 0){
             for(i: Int in 0..savedContacts.size-1){
                 userList.add(DataVo(savedContacts[i].name, savedContacts[i].address,savedContacts[i].phonenumber,savedContacts[i].photo))
@@ -231,6 +268,7 @@ class FragmentOne : Fragment() {
                     )
                     userList.add(tempData)
                     db?.contactDao()?.insertAll(Contact(null, tempData.name, tempData.address, tempData.phonenumber, tempData.photo, "null"))
+                    savedContacts = db!!.contactDao().getAll()
                     urilist.add(null)
                 }
             } catch (e: JSONException) {
