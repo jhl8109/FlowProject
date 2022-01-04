@@ -166,7 +166,7 @@ class FragmentTwo : Fragment() {
                     imageArrayList[j+i*4].setOnClickListener {
                         Log.e("Clicked","${j+i*4} Clicked")
                         if (imageArrayList[j+i*4].layoutParams != fillLinear){
-                            for (k in 0..4) {
+                            for (k in 0..(imageArrayList.size-1)/4) {
                                 for (w in 0..3) {
                                     if (k == i && w == j) continue
                                     imageArrayList[w+k*4].visibility = View.GONE
@@ -181,7 +181,7 @@ class FragmentTwo : Fragment() {
                             }
                         }
                         else {
-                            for (k in 0..4) {
+                            for (k in 0..(imageArrayList.size-1)/4) {
                                 for (w in 0..3) {
                                     if (k == i && w == j) continue
                                     imageArrayList[w+k*4].visibility = View.VISIBLE
@@ -190,7 +190,6 @@ class FragmentTwo : Fragment() {
                                 imageArrayList[j+i*4].mediumScale = 0.9999F
                                 imageArrayList[j+i*4].maximumScale = 1.0001F
                                 imageArrayList[j+i*4].layoutParams = imageLayoutParams
-
                                 if (k == i) continue
                                 linearLayoutList[k].visibility = View.VISIBLE
                             }
