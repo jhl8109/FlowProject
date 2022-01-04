@@ -169,9 +169,8 @@ class FragmentThree : Fragment() {
                         textView.visibility = View.VISIBLE
                         loadingImage.visibility = View.INVISIBLE
                     }
-                    Log.e("failed", response.code().toString())
-                    Log.e("failed",response.errorBody()?.string()!!)
                 } else {
+                    //Log.e("failed", response.code().toString())
                 }
             }
             override fun onFailure(call: Call<Image>, t: Throwable) {

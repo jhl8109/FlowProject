@@ -1,5 +1,5 @@
 # 몰입캠프 개발 1주차
-3개의 탭(=> 연락처, 갤러리, 얼굴인식)으로 구성된 앱
+3개의 탭(=> 연락처, 갤러리, 얼굴인식)으로 구성된 앱 <br>
 
 ## 팀원
 [박정웅](https://github.com/yeolia327)
@@ -7,11 +7,11 @@
 
 ## 주요 기능
 ### 연락처
-- 지인의 이름, 연락처, 주소 및 사진을 저장할 수 있는 연락처 탭을 구현하였다.
+- 지인의 이름, 연락처, 주소 및 사진을 저장할 수 있는 연락처 탭을 recyclerview로 구현하였다.
 - 연락처를 누르면 팝업 창이 생성되어 전화 걸기, 메세지 보내기, 사진 설정, 연락처 수정 및 전화번호 삭제를 할 수 있다.
-- Room db를 사용하여 앱을 종료하더라도 연락처 데이터가 유지된다.
+- 초기 연락처 데이터는 휴대폰에 저장된 Json파일로부터 받아오며, Room db를 사용하여 앱을 종료하더라도 연락처 데이터가 유지된다.
 
-|  <img src = "https://user-images.githubusercontent.com/77967396/147923683-42ad0323-a976-4675-ad6d-12a20926e477.gif"> |  <img src = "https://user-images.githubusercontent.com/77967396/147923980-682a7583-92e8-42c2-ae07-d95904272c86.gif"> |  <img src = "https://user-images.githubusercontent.com/77967396/147924183-8163ddf7-73fc-4c54-9ba4-67b449b164e4.gif"> |
+| <img src = "https://user-images.githubusercontent.com/77967396/147923683-42ad0323-a976-4675-ad6d-12a20926e477.gif"> |  <img src = "https://user-images.githubusercontent.com/77967396/147923980-682a7583-92e8-42c2-ae07-d95904272c86.gif"> |  <img src = "https://user-images.githubusercontent.com/77967396/147924183-8163ddf7-73fc-4c54-9ba4-67b449b164e4.gif"> |
 |:--------|:--------:|--------:|
 |<div align="center"> 연락처 연동 </div>| 사진 설정 및 연락처 수정 |<div align="center"> 연락처 삭제 및 데이터 유지 </div>|
 
